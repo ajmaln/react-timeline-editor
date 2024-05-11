@@ -1,6 +1,6 @@
 {
-  "name": "@xzdarcy/react-timeline-editor",
-  "version": "0.1.9",
+  "name": "@ajmaln/react-timeline-editor",
+  "version": "0.2.0",
   "author": "xzdarcy",
   "license": "MIT",
   "keywords": [
@@ -11,12 +11,12 @@
     "typescript"
   ],
   "bugs": {
-    "url": "https://github.com/xzdarcy/react-timeline-editor/issues"
+    "url": "https://github.com/ajmaln/react-timeline-editor/issues"
   },
-  "homepage": "https://github.com/xzdarcy/react-timeline-editor#readme",
+  "homepage": "https://github.com/ajmaln/react-timeline-editor#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xzdarcy/react-timeline-editor.git"
+    "url": "git+https://github.com/ajmaln/react-timeline-editor.git"
   },
   "scripts": {
     "start": "dumi dev",
