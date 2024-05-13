@@ -111,6 +111,8 @@ export const EditArea = React.forwardRef<EditAreaState, EditAreaProps>((props, r
           backgroundSize: `${startLeft}px, ${scaleWidth}px`,
         }}
         areaRef={editAreaRef}
+        isLastRow={rowIndex === editorData.length}
+        rowIndex={rowIndex}
         key={key}
         rowHeight={row?.rowHeight || rowHeight}
         rowData={row}
