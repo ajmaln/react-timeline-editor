@@ -1,4 +1,4 @@
-import { Timeline, TimelineState } from '@xzdarcy/react-timeline-editor';
+import { Timeline, TimelineState } from '@ajmaln/react-timeline-editor';
 import { Switch } from 'antd';
 import { cloneDeep } from 'lodash';
 import React, { useRef, useState } from 'react';

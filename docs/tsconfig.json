@@ -8,7 +8,7 @@
     "baseUrl": "../",
     "strict": false,
     "paths": {
-      "@xzdarcy/react-timeline-editor": ["src/index.tsx"]
+      "@ajmaln/react-timeline-editor": ["src/index.tsx"]
     },
     "allowSyntheticDefaultImports": true
   },

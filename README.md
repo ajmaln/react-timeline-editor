@@ -1,6 +1,6 @@
 # React Timeline Editor
-[![npm version](https://img.shields.io/npm/v/@xzdarcy/react-timeline-editor.svg?style=flat-square)](https://www.npmjs.com/package/@xzdarcy/react-timeline-editor)
-[![npm downloads](https://img.shields.io/npm/dm/@xzdarcy/react-timeline-editor.svg?style=flat-square)](https://www.npmjs.com/package/@xzdarcy/react-timeline-editor)
+[![npm version](https://img.shields.io/npm/v/@ajmaln/react-timeline-editor.svg?style=flat-square)](https://www.npmjs.com/package/@ajmaln/react-timeline-editor)
+[![npm downloads](https://img.shields.io/npm/dm/@ajmaln/react-timeline-editor.svg?style=flat-square)](https://www.npmjs.com/package/@ajmaln/react-timeline-editor)
 
 **[React Timeline Editor](https://zdarcy.com/)** is a react component used to quickly build a timeline animation editor.
 
@@ -8,11 +8,11 @@
 ## Getting Started
 
 ```bash
-npm install @xzdarcy/react-timeline-editor
+npm install @ajmaln/react-timeline-editor
 ```
 
 ```ts
-import { Timeline, TimelineEffect, TimelineRow } from '@xzdarcy/react-timeline-editor';
+import { Timeline, TimelineEffect, TimelineRow } from '@ajmaln/react-timeline-editor';
 import React from 'react';
 
 const mockData: TimelineRow[] = [{

@@ -1,5 +1,5 @@
 import { CaretRightOutlined, PauseOutlined } from '@ant-design/icons';
-import { TimelineEngine } from '@xzdarcy/react-timeline-editor';
+import { TimelineEngine } from '@ajmaln/react-timeline-editor';
 import { Slider } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import './index.less';
@@ -22,7 +22,7 @@ const TimelineEditor = () => {
     timelineEngine.current.on('paused', () => setIsPlaying(false));
     timelineEngine.current.on('afterSetTime', ({ time }) => setTime(time));
     timelineEngine.current.on('setTimeByTick', ({ time }) => setTime(time));
-    
+
     let dur = 0;
     mockData.forEach(row => {
       row.actions.forEach(action => dur = Math.max(dur, action.end));
