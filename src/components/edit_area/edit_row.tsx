@@ -37,7 +37,8 @@ export const EditRow: FC<EditRowProps> = (props) => {
     scale,
     scaleWidth,
     isLastRow,
-    rowIndex
+    rowIndex,
+    getGhostRender,
   } = props;
 
   const classNames = ['edit-row'];
@@ -106,6 +107,8 @@ export const EditRow: FC<EditRowProps> = (props) => {
             width: middlewareData.hideOutside?.width || scaleWidth * 2,
             visibility: middlewareData.hideOutside?.isOutside ? 'hidden' : 'visible',
           }}
+          row={rowData}
+          getGhostRender={getGhostRender}
           {...getFloatingProps()}
         />
       )}
