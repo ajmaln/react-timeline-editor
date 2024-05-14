@@ -47,6 +47,8 @@ export const Timeline = React.forwardRef<TimelineState, TimelineEditor>((props, 
   // 当前时间轴宽度
   const [width, setWidth] = useState(Number.MAX_SAFE_INTEGER);
 
+  const [isCursorDragging, setIsCursorDragging] = useState(false);
+
   /** 监听数据变化 */
   useLayoutEffect(() => {
     handleSetScaleCount(getScaleCountByRows(data, { scale }));
@@ -138,6 +140,9 @@ export const Timeline = React.forwardRef<TimelineState, TimelineEditor>((props, 
     get isPaused() {
       return engineRef.current.isPaused;
     },
+    get engine() {
+      return engineRef.current;
+    },
     setPlayRate: engineRef.current.setPlayRate.bind(engineRef.current),
     getPlayRate: engineRef.current.getPlayRate.bind(engineRef.current),
     setTime: (time: number, params?: { left?: number; updateTime?: boolean }) => handleSetCursor({ time, ...params }),
@@ -187,6 +192,7 @@ export const Timeline = React.forwardRef<TimelineState, TimelineEditor>((props, 
             <EditArea
               {...checkedProps}
               timelineWidth={width}
+              isCursorDragging={isCursorDragging}
               ref={(ref) => ((areaRef.current as any) = ref?.domRef.current)}
               disableDrag={disableDrag || isPlaying}
               editorData={editorData}
@@ -216,6 +222,8 @@ export const Timeline = React.forwardRef<TimelineState, TimelineEditor>((props, 
                 areaRef={areaRef}
                 scrollSync={scrollSync}
                 deltaScrollLeft={autoScroll && handleDeltaScrollLeft}
+                onCursorMoveStart={() => setIsCursorDragging(true)}
+                onCursorMoveEnd={() => setIsCursorDragging(false)}
               />
             )}
           </>

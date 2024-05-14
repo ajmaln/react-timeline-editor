@@ -18,6 +18,9 @@ export type EditActionProps = CommonProp & {
   areaRef: React.MutableRefObject<HTMLDivElement>;
   /** 设置scroll left */
   deltaScrollLeft?: (delta: number) => void;
+
+  onActionDragStart?: () => void;
+  onActionDragEnd?: () => void;
 };
 
 export const EditAction: FC<EditActionProps> = ({
@@ -42,6 +45,10 @@ export const EditAction: FC<EditActionProps> = ({
   onActionResizeStart,
   onActionResizeEnd,
   onActionResizing,
+
+  // Internal
+  onActionDragStart,
+  onActionDragEnd,
 
   dragLineData,
   setEditorData,
@@ -104,6 +111,7 @@ export const EditAction: FC<EditActionProps> = ({
 
   //#region [rgba(100,120,156,0.08)] 回调
   const handleDragStart: RndDragStartCallback = () => {
+    onActionDragStart && onActionDragStart();
     onActionMoveStart && onActionMoveStart({ action, row });
   };
   const handleDrag: RndDragCallback = ({ left, width }) => {
@@ -131,6 +139,7 @@ export const EditAction: FC<EditActionProps> = ({
 
     // 执行回调
     if (onActionMoveEnd) onActionMoveEnd({ action, row, start, end });
+    onActionDragEnd && onActionDragEnd();
   };
 
   const handleResizeStart: RndResizeStartCallback = (dir) => {
