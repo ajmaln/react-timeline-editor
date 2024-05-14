@@ -81,6 +81,10 @@ export interface EditData {
    */
   getActionRender?: (action: TimelineAction, row: TimelineRow) => ReactNode;
   /**
+   * @description 自定义ghost渲染
+   */
+  getGhostRender?: (row: TimelineRow) => ReactNode;
+  /**
    * @description 自定义scale渲染
    */
   getScaleRender?: (scale: number) => ReactNode;

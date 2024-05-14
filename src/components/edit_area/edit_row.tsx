@@ -2,14 +2,19 @@ import React, { FC } from 'react';
 import { TimelineRow } from '../../interface/action';
 import { CommonProp } from '../../interface/common_prop';
 import { prefix } from '../../utils/deal_class_prefix';
-import { parserPixelToTime } from '../../utils/deal_data';
+import { parserPixelToTime, parserTimeToPixel } from '../../utils/deal_data';
 import { DragLineData } from './drag_lines';
 import { EditAction } from './edit_action';
 import './edit_row.less';
 
+import { HoverGhost } from './hover_ghost';
+import { useHoverGhost } from './hooks/use_hover_ghost';
+
 export type EditRowProps = CommonProp & {
   areaRef: React.MutableRefObject<HTMLDivElement>;
   rowData?: TimelineRow;
+  isLastRow: boolean;
+  rowIndex: number;
   style?: React.CSSProperties;
   dragLineData: DragLineData;
   setEditorData: (params: TimelineRow[]) => void;
@@ -31,6 +36,9 @@ export const EditRow: FC<EditRowProps> = (props) => {
     startLeft,
     scale,
     scaleWidth,
+    isLastRow,
+    rowIndex,
+    getGhostRender,
   } = props;
 
   const classNames = ['edit-row'];
@@ -45,11 +53,29 @@ export const EditRow: FC<EditRowProps> = (props) => {
     return time;
   };
 
+  const isFirstRow = rowIndex === 0;
+  const shouldShowHoverGhost = !(isFirstRow || isLastRow);
+
+  const {
+    getFloatingProps,
+    getReferenceProps,
+    isOpen,
+    middlewareData,
+    floatingStyles,
+    refs
+  } = useHoverGhost({
+    rowData,
+    startLeft,
+    scaleWidth,
+    scale,
+    enabled: shouldShowHoverGhost,
+  });
+
   return (
     <div
-      className={`${prefix(...classNames)} ${(rowData?.classNames || []).join(
-        ' ',
-      )}`}
+      ref={refs.setReference}
+      {...getReferenceProps()}
+      className={`${prefix(...classNames)} ${(rowData?.classNames || []).join(' ')}`}
       style={style}
       onClick={(e) => {
         if (rowData && onClickRow) {
@@ -71,14 +97,21 @@ export const EditRow: FC<EditRowProps> = (props) => {
       }}
     >
       {(rowData?.actions || []).map((action) => (
-        <EditAction
-          key={action.id}
-          {...props}
-          handleTime={handleTime}
-          row={rowData}
-          action={action}
-        />
+        <EditAction key={action.id} {...props} handleTime={handleTime} row={rowData} action={action} />
       ))}
+      {isOpen && (
+        <HoverGhost
+          ref={refs.setFloating}
+          styles={{
+            ...floatingStyles,
+            width: middlewareData.hideOutside?.width || scaleWidth * 2,
+            visibility: middlewareData.hideOutside?.isOutside ? 'hidden' : 'visible',
+          }}
+          row={rowData}
+          getGhostRender={getGhostRender}
+          {...getFloatingProps()}
+        />
+      )}
     </div>
   );
 };
