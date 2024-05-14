@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC } from 'react';
 import { TimelineRow } from '../../interface/action';
 import { CommonProp } from '../../interface/common_prop';
 import { prefix } from '../../utils/deal_class_prefix';
@@ -7,12 +7,8 @@ import { DragLineData } from './drag_lines';
 import { EditAction } from './edit_action';
 import './edit_row.less';
 
-import {
-  useFloating,
-  useHover,
-  useInteractions,
-  useClientPoint,
-} from "@floating-ui/react";
+import { HoverGhost } from './hover_ghost';
+import { useHoverGhost } from './hooks/use_hover_ghost';
 
 export type EditRowProps = CommonProp & {
   areaRef: React.MutableRefObject<HTMLDivElement>;
@@ -27,34 +23,6 @@ export type EditRowProps = CommonProp & {
   /** 设置scroll left */
   deltaScrollLeft: (scrollLeft: number) => void;
 };
-
-const hideOutside = ({ actions, startLeft, floatingWidth }) => {
-  return {
-    name: 'hideOutside',
-    options: { actions, startLeft, floatingWidth },
-    fn({x, y}) {
-      const isBeforeStart = x < startLeft;
-
-      const isInsideAnAction = actions.some(action => {
-        return x >= action.left && x <= action.right;
-      });
-
-      if (isBeforeStart || isInsideAnAction) return { x, y, data: { isOutside: true, width: floatingWidth } };
-
-      const nearAction = actions.find(action => {
-        return x + floatingWidth >= action.left && x < action.right;
-      });
-
-      if (nearAction) return { x, y, data: { isOutside: false, width: nearAction.left - x } };
-
-      return {
-        x,
-        y,
-        data: { isOutside: false, width: floatingWidth }
-      };
-    },
-  }
-}
 
 export const EditRow: FC<EditRowProps> = (props) => {
   const {
@@ -85,50 +53,28 @@ export const EditRow: FC<EditRowProps> = (props) => {
   };
 
   const isFirstRow = rowIndex === 0;
-  const shouldShowAdd = !(isFirstRow || isLastRow);
+  const shouldShowHoverGhost = !(isFirstRow || isLastRow);
 
-  const [isOpen, setIsOpen] = useState(false);
-
-  const middlewareOptions = useMemo(() => {
-    return {
-      actions: rowData?.actions.map(action => {
-        return {
-          id: action.id,
-          left: parserTimeToPixel(action.start, { startLeft, scaleWidth, scale }),
-          right: parserTimeToPixel(action.end, { startLeft, scaleWidth, scale })
-        }
-      }).sort((a, b) => a.left - b.left),
-      startLeft,
-      floatingWidth: scaleWidth * 2
-    };
-  }, [rowData, startLeft, scaleWidth, scale]);
-
-  const { refs, floatingStyles, context, middlewareData } = useFloating({
-    open: isOpen,
-    onOpenChange: setIsOpen,
-    placement: "right",
-    middleware: [hideOutside(middlewareOptions)]
+  const {
+    getFloatingProps,
+    getReferenceProps,
+    isOpen,
+    middlewareData,
+    floatingStyles,
+    refs
+  } = useHoverGhost({
+    rowData,
+    startLeft,
+    scaleWidth,
+    scale,
+    enabled: shouldShowHoverGhost,
   });
-
-  const hover = useHover(context, {
-    enabled: shouldShowAdd
-  });
-  const clientPoint = useClientPoint(context, {
-    axis: "x",
-    enabled: shouldShowAdd
-  });
-  const { getReferenceProps, getFloatingProps } = useInteractions([
-    hover,
-    clientPoint,
-  ]);
 
   return (
     <div
       ref={refs.setReference}
       {...getReferenceProps()}
-      className={`${prefix(...classNames)} ${(rowData?.classNames || []).join(
-        ' ',
-      )}`}
+      className={`${prefix(...classNames)} ${(rowData?.classNames || []).join(' ')}`}
       style={style}
       onClick={(e) => {
         if (rowData && onClickRow) {
@@ -150,27 +96,18 @@ export const EditRow: FC<EditRowProps> = (props) => {
       }}
     >
       {(rowData?.actions || []).map((action) => (
-        <EditAction
-          key={action.id}
-          {...props}
-          handleTime={handleTime}
-          row={rowData}
-          action={action}
-        />
+        <EditAction key={action.id} {...props} handleTime={handleTime} row={rowData} action={action} />
       ))}
-      {shouldShowAdd && isOpen && (
-        <div
+      {isOpen && (
+        <HoverGhost
           ref={refs.setFloating}
-          style={{
+          styles={{
             ...floatingStyles,
             width: middlewareData.hideOutside?.width || scaleWidth * 2,
-            visibility: middlewareData.hideOutside?.isOutside ? "hidden" : "visible",
+            visibility: middlewareData.hideOutside?.isOutside ? 'hidden' : 'visible',
           }}
           {...getFloatingProps()}
-          className="h-full bg-blue-500 flex justify-center items-center text-white rounded text-center pointer-events-none"
-        >
-          +
-        </div>
+        />
       )}
     </div>
   );
