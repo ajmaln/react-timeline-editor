@@ -19,6 +19,10 @@ export type CursorProps = CommonProp & {
   deltaScrollLeft: (delta: number) => void;
   /** 滚动同步ref（TODO: 该数据用于临时解决scrollLeft拖住时不同步问题） */
   scrollSync: React.MutableRefObject<ScrollSync>;
+
+  /** Internal */
+  onCursorMoveStart?: () => void;
+  onCursorMoveEnd?: () => void;
 };
 
 export const Cursor: FC<CursorProps> = ({
@@ -37,6 +41,8 @@ export const Cursor: FC<CursorProps> = ({
   onCursorDragStart,
   onCursorDrag,
   onCursorDragEnd,
+  onCursorMoveStart,
+  onCursorMoveEnd,
 }) => {
   const rowRnd = useRef<RowRndApi>();
   const draggingLeft = useRef<undefined | number>();
@@ -64,12 +70,14 @@ export const Cursor: FC<CursorProps> = ({
         onCursorDragStart && onCursorDragStart(cursorTime);
         draggingLeft.current = parserTimeToPixel(cursorTime, { startLeft, scaleWidth, scale }) - scrollLeft;
         rowRnd.current.updateLeft(draggingLeft.current);
+        onCursorMoveStart && onCursorMoveStart();
       }}
       onDragEnd={() => {
         const time = parserPixelToTime(draggingLeft.current + scrollLeft, { startLeft, scale, scaleWidth });
         setCursor({ time });
         onCursorDragEnd && onCursorDragEnd(time);
         draggingLeft.current = undefined;
+        onCursorMoveEnd && onCursorMoveEnd();
       }}
       onDrag={({ left }, scroll = 0) => {
         const scrollLeft = scrollSync.current.state.scrollLeft;

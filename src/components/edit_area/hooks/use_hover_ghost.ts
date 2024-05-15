@@ -44,7 +44,7 @@ export const useHoverGhost = ({
   scale: number,
   enabled: boolean
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   const middlewareOptions = useMemo(() => {
     return {
@@ -60,9 +60,9 @@ export const useHoverGhost = ({
     };
   }, [rowData, startLeft, scaleWidth, scale]);
 
-  const { refs, floatingStyles, context, middlewareData } = useFloating({
-    open: isOpen,
-    onOpenChange: setIsOpen,
+  const { refs, floatingStyles, context, middlewareData, x } = useFloating({
+    open: isVisible,
+    onOpenChange: setIsVisible,
     placement: "right",
     middleware: [hideOutside(middlewareOptions)]
   });
@@ -81,7 +81,8 @@ export const useHoverGhost = ({
 
   return {
     refs,
-    isOpen: enabled && isOpen,
+    x,
+    isVisible: enabled && isVisible,
     floatingStyles,
     middlewareData,
     getReferenceProps,

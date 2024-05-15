@@ -123,6 +123,17 @@ export interface EditData {
     },
   ) => void;
   /**
+   * @description 点击行回调
+   */
+  onGhostClick?: (
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+    param: {
+      row: TimelineRow;
+      start: number;
+      end: number;
+    },
+  ) => void;
+  /**
    * @description 点击动作回调
    */
   onClickAction?: (
@@ -213,12 +224,14 @@ export interface TimelineState {
   target: HTMLElement;
   /** 运行监听器 */
   listener: Emitter<EventTypes>;
+  /** 运行器是否正在播放 */
+  engine: ITimelineEngine;
   /** 是否正在播放 */
   isPlaying: boolean;
   /** 是否暂停中 */
   isPaused: boolean;
   /** 设置当前播放时间 */
-  setTime: (time: number) => void;
+  setTime: (time: number, params?: { left?: number; updateTime?: boolean }) => void;
   /** 获取当前播放时间 */
   getTime: () => number;
   /** 设置播放速率 */

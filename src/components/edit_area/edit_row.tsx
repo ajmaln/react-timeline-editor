@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { TimelineRow } from '../../interface/action';
 import { CommonProp } from '../../interface/common_prop';
 import { prefix } from '../../utils/deal_class_prefix';
@@ -14,6 +14,7 @@ export type EditRowProps = CommonProp & {
   areaRef: React.MutableRefObject<HTMLDivElement>;
   rowData?: TimelineRow;
   isLastRow: boolean;
+  isCursorDragging: boolean;
   rowIndex: number;
   style?: React.CSSProperties;
   dragLineData: DragLineData;
@@ -30,6 +31,7 @@ export const EditRow: FC<EditRowProps> = (props) => {
     style = {},
     onClickRow,
     onDoubleClickRow,
+    onGhostClick,
     onContextMenuRow,
     areaRef,
     scrollLeft,
@@ -37,10 +39,12 @@ export const EditRow: FC<EditRowProps> = (props) => {
     scale,
     scaleWidth,
     isLastRow,
+    isCursorDragging,
     rowIndex,
     getGhostRender,
   } = props;
 
+  const [isDraggingAction, setIsDraggingAction] = useState(false);
   const classNames = ['edit-row'];
   if (rowData?.selected) classNames.push('edit-row-selected');
 
@@ -54,12 +58,13 @@ export const EditRow: FC<EditRowProps> = (props) => {
   };
 
   const isFirstRow = rowIndex === 0;
-  const shouldShowHoverGhost = !(isFirstRow || isLastRow);
+  const shouldShowHoverGhost = !(isFirstRow || isLastRow || isDraggingAction || isCursorDragging);
 
   const {
+    x,
     getFloatingProps,
     getReferenceProps,
-    isOpen,
+    isVisible: isGhostVisible,
     middlewareData,
     floatingStyles,
     refs
@@ -78,9 +83,17 @@ export const EditRow: FC<EditRowProps> = (props) => {
       className={`${prefix(...classNames)} ${(rowData?.classNames || []).join(' ')}`}
       style={style}
       onClick={(e) => {
-        if (rowData && onClickRow) {
+        if (!rowData) return;
+        if (onGhostClick && isGhostVisible && !middlewareData.hideOutside?.isOutside) {
+          const start = handleTime(e);
+          const end = parserPixelToTime(x + middlewareData.hideOutside?.width, { startLeft, scale, scaleWidth });
+
+          onGhostClick(e, { row: rowData, start, end });
+        }
+
+        if (onClickRow) {
           const time = handleTime(e);
-          onClickRow(e, { row: rowData, time: time });
+          onClickRow(e, { row: rowData, time });
         }
       }}
       onDoubleClick={(e) => {
@@ -97,9 +110,17 @@ export const EditRow: FC<EditRowProps> = (props) => {
       }}
     >
       {(rowData?.actions || []).map((action) => (
-        <EditAction key={action.id} {...props} handleTime={handleTime} row={rowData} action={action} />
+        <EditAction
+          key={action.id}
+          {...props}
+          handleTime={handleTime}
+          row={rowData}
+          action={action}
+          onActionDragStart={() => setIsDraggingAction(true)}
+          onActionDragEnd={() => setIsDraggingAction(false)}
+        />
       ))}
-      {isOpen && (
+      {isGhostVisible && (
         <HoverGhost
           ref={refs.setFloating}
           styles={{

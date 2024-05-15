@@ -15,6 +15,8 @@ export type EditAreaProps = CommonProp & {
   scrollLeft: number;
   /** 距离顶部滚动距离 */
   scrollTop: number;
+  /** 编辑器数据 */
+  isCursorDragging: boolean;
   /** 滚动回调，用于同步滚动 */
   onScroll: (params: OnScrollParams) => void;
   /** 设置编辑器数据 */
