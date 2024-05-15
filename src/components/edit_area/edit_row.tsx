@@ -33,6 +33,7 @@ export const EditRow: FC<EditRowProps> = (props) => {
     onDoubleClickRow,
     onGhostClick,
     onContextMenuRow,
+    onMouseMoveRow,
     areaRef,
     scrollLeft,
     startLeft,
@@ -42,6 +43,9 @@ export const EditRow: FC<EditRowProps> = (props) => {
     isCursorDragging,
     rowIndex,
     getGhostRender,
+    getGhostCursorRender,
+    maxGhostRight,
+    isGhostEnabled,
   } = props;
 
   const [isDraggingAction, setIsDraggingAction] = useState(false);
@@ -67,72 +71,97 @@ export const EditRow: FC<EditRowProps> = (props) => {
     isVisible: isGhostVisible,
     middlewareData,
     floatingStyles,
-    refs
+    refs,
   } = useHoverGhost({
     rowData,
     startLeft,
     scaleWidth,
     scale,
-    enabled: shouldShowHoverGhost,
+    enabled: shouldShowHoverGhost && isGhostEnabled,
+    maxGhostRight,
   });
 
   return (
-    <div
-      ref={refs.setReference}
-      {...getReferenceProps()}
-      className={`${prefix(...classNames)} ${(rowData?.classNames || []).join(' ')}`}
-      style={style}
-      onClick={(e) => {
-        if (!rowData) return;
-        if (onGhostClick && isGhostVisible && !middlewareData.hideOutside?.isOutside) {
-          const start = handleTime(e);
-          const end = parserPixelToTime(x + middlewareData.hideOutside?.width, { startLeft, scale, scaleWidth });
+    <>
+      <div
+        ref={refs.setReference}
+        {...getReferenceProps({
+          onClick: (e) => {
+            if (!rowData) return;
+            if (onGhostClick && isGhostVisible && !middlewareData.hideOutside?.isOutside) {
+              const start = handleTime(e);
+              const end = parserPixelToTime(x + middlewareData.hideOutside?.width, { startLeft, scale, scaleWidth });
 
-          onGhostClick(e, { row: rowData, start, end });
-        }
+              onGhostClick(e, { row: rowData, start, end });
+            }
 
-        if (onClickRow) {
-          const time = handleTime(e);
-          onClickRow(e, { row: rowData, time });
-        }
-      }}
-      onDoubleClick={(e) => {
-        if (rowData && onDoubleClickRow) {
-          const time = handleTime(e);
-          onDoubleClickRow(e, { row: rowData, time: time });
-        }
-      }}
-      onContextMenu={(e) => {
-        if (rowData && onContextMenuRow) {
-          const time = handleTime(e);
-          onContextMenuRow(e, { row: rowData, time: time });
-        }
-      }}
-    >
-      {(rowData?.actions || []).map((action) => (
-        <EditAction
-          key={action.id}
-          {...props}
-          handleTime={handleTime}
-          row={rowData}
-          action={action}
-          onActionDragStart={() => setIsDraggingAction(true)}
-          onActionDragEnd={() => setIsDraggingAction(false)}
-        />
-      ))}
-      {isGhostVisible && (
-        <HoverGhost
-          ref={refs.setFloating}
-          styles={{
-            ...floatingStyles,
-            width: middlewareData.hideOutside?.width || scaleWidth * 2,
-            visibility: middlewareData.hideOutside?.isOutside ? 'hidden' : 'visible',
-          }}
-          row={rowData}
-          getGhostRender={getGhostRender}
-          {...getFloatingProps()}
-        />
-      )}
-    </div>
+            if (onClickRow) {
+              const time = handleTime(e);
+              onClickRow(e, { row: rowData, time });
+            }
+          },
+          onDoubleClick: (e) => {
+            if (rowData && onDoubleClickRow) {
+              const time = handleTime(e);
+              onDoubleClickRow(e, { row: rowData, time: time });
+            }
+          },
+          onContextMenu: (e) => {
+            if (rowData && onContextMenuRow) {
+              const time = handleTime(e);
+              onContextMenuRow(e, { row: rowData, time: time });
+            }
+          },
+          onMouseMove: (e) => {
+            if (rowData && onMouseMoveRow) {
+              const time = handleTime(e);
+              onMouseMoveRow(e, { row: rowData, time: time });
+            }
+          },
+        } as React.HTMLProps<HTMLDivElement>)}
+        className={`${prefix(...classNames)} ${(rowData?.classNames || []).join(' ')}`}
+        style={style}
+      >
+        {(rowData?.actions || []).map((action) => (
+          <EditAction
+            key={action.id}
+            {...props}
+            handleTime={handleTime}
+            row={rowData}
+            action={action}
+            onActionDragStart={() => setIsDraggingAction(true)}
+            onActionDragEnd={() => setIsDraggingAction(false)}
+          />
+        ))}
+        {isGhostVisible && (
+          <HoverGhost
+            ref={refs.setFloating}
+            styles={{
+              ...floatingStyles,
+              width: middlewareData.hideOutside?.width || scaleWidth * 2,
+              visibility: middlewareData.hideOutside?.isOutside ? 'hidden' : 'visible',
+            }}
+            row={rowData}
+            getGhostRender={getGhostRender}
+            {...getFloatingProps()}
+          />
+        )}
+      </div>
+      {isGhostVisible &&
+        (getGhostCursorRender ? (
+          getGhostCursorRender({ x })
+        ) : (
+          <div
+            style={{
+              width: 1,
+              height: '100%',
+              position: 'absolute',
+              left: x,
+              backgroundColor: 'black',
+              pointerEvents: 'none',
+            }}
+          />
+        ))}
+    </>
   );
 };
