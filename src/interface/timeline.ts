@@ -10,6 +10,10 @@ export * from './effect';
 
 export interface EditData {
   /**
+   * @description 是否启动幽灵拖拽
+   */
+  isGhostEnabled?: boolean;
+  /**
    * @description 时间轴编辑数据
    */
   editorData: TimelineRow[];
@@ -77,6 +81,10 @@ export interface EditData {
    */
   engine?: ITimelineEngine;
   /**
+   *
+   */
+  maxGhostRight?: number;
+  /**
    * @description 自定义action区域渲染
    */
   getActionRender?: (action: TimelineAction, row: TimelineRow) => ReactNode;
@@ -84,6 +92,10 @@ export interface EditData {
    * @description 自定义ghost渲染
    */
   getGhostRender?: (row: TimelineRow) => ReactNode;
+  /**
+   * @description 自定义ghost cursor渲染
+   */
+  getGhostCursorRender?: ({ x }: { x: number }) => ReactNode;
   /**
    * @description 自定义scale渲染
    */
@@ -131,6 +143,16 @@ export interface EditData {
       row: TimelineRow;
       start: number;
       end: number;
+    },
+  ) => void;
+  /**
+   * @description 鼠标移动行回调
+   */
+  onMouseMoveRow?: (
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+    param: {
+      row: TimelineRow;
+      time: number;
     },
   ) => void;
   /**
@@ -217,6 +239,14 @@ export interface EditData {
    * @description 点击时间区域事件, 返回false时阻止设置时间
    */
   onClickTimeArea?: (time: number, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => boolean | undefined;
+  /**
+   * @description 鼠标移入编辑区域
+   */
+  onMouseEnterEditArea?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
+   * @description 鼠标移出编辑区域
+   */
+  onMouseLeaveEditArea?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 export interface TimelineState {

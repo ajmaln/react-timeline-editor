@@ -51,8 +51,17 @@ export const EditArea = React.forwardRef<EditAreaState, EditAreaProps>((props, r
     onActionResizeEnd,
     onActionResizeStart,
     onActionResizing,
+    onMouseEnterEditArea,
+    onMouseLeaveEditArea,
   } = props;
-  const { dragLineData, initDragLine, updateDragLine, disposeDragLine, defaultGetAssistPosition, defaultGetMovePosition } = useDragLine();
+  const {
+    dragLineData,
+    initDragLine,
+    updateDragLine,
+    disposeDragLine,
+    defaultGetAssistPosition,
+    defaultGetMovePosition,
+  } = useDragLine();
   const editAreaRef = useRef<HTMLDivElement>();
   const gridRef = useRef<Grid>();
   const heightRef = useRef(-1);
@@ -157,7 +166,12 @@ export const EditArea = React.forwardRef<EditAreaState, EditAreaProps>((props, r
   }, [editorData]);
 
   return (
-    <div ref={editAreaRef} className={prefix('edit-area')}>
+    <div
+      ref={editAreaRef}
+      className={prefix('edit-area')}
+      onMouseEnter={onMouseEnterEditArea}
+      onMouseLeave={onMouseLeaveEditArea}
+    >
       <AutoSizer>
         {({ width, height }) => {
           // 获取全部高度
