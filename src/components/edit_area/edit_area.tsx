@@ -209,6 +209,7 @@ export const EditArea = React.forwardRef<EditAreaState, EditAreaProps>((props, r
               onScroll={(param) => {
                 onScroll(param);
               }}
+              scrollingResetTimeInterval={0}
             />
           );
         }}
