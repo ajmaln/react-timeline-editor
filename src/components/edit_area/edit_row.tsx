@@ -62,7 +62,7 @@ export const EditRow: FC<EditRowProps> = (props) => {
   };
 
   const isFirstRow = rowIndex === 0;
-  const shouldShowHoverGhost = !(isFirstRow || isLastRow || isDraggingAction || isCursorDragging);
+  const shouldShowHoverGhost = !(isLastRow || isDraggingAction || isCursorDragging);
 
   const {
     x,
@@ -139,7 +139,7 @@ export const EditRow: FC<EditRowProps> = (props) => {
             styles={{
               ...floatingStyles,
               width: middlewareData.hideOutside?.width || scaleWidth * 2,
-              visibility: middlewareData.hideOutside?.isOutside ? 'hidden' : 'visible',
+              visibility: middlewareData.hideOutside?.isOutside || isFirstRow ? 'hidden' : 'visible',
             }}
             row={rowData}
             getGhostRender={getGhostRender}
