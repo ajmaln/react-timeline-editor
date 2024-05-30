@@ -37,6 +37,8 @@ export const Cursor: FC<CursorProps> = ({
   scrollSync,
   areaRef,
   maxScaleCount,
+  cursorMin,
+  cursorMax,
   deltaScrollLeft,
   onCursorDragStart,
   onCursorDrag,
@@ -81,10 +83,14 @@ export const Cursor: FC<CursorProps> = ({
       }}
       onDrag={({ left }, scroll = 0) => {
         const scrollLeft = scrollSync.current.state.scrollLeft;
+        const leftMax = cursorMax ? parserTimeToPixel(cursorMax, { startLeft, scaleWidth, scale }) - scrollLeft: 0;
+        const leftMin = cursorMin ? parserTimeToPixel(cursorMin, { startLeft, scaleWidth, scale }) - scrollLeft: 0
 
         if (!scroll || scrollLeft === 0) {
           // 拖拽时，如果当前left < left min，将数值设置为 left min
-          if (left < startLeft - scrollLeft) draggingLeft.current = startLeft - scrollLeft;
+          const minLeft = Math.max(leftMin, startLeft - scrollLeft);
+          if (left < minLeft) draggingLeft.current = minLeft;
+          else if (left > leftMax) draggingLeft.current = leftMax;
           else draggingLeft.current = left;
         } else {
           // 自动滚动时，如果当前left < left min，将数值设置为 left min

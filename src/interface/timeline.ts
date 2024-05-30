@@ -85,6 +85,14 @@ export interface EditData {
    */
   maxGhostRight?: number;
   /**
+   * @description Min cursor drag boundary
+   */
+  cursorMin?: number;
+  /**
+   * @description Max cursor drag boundary
+   */
+  cursorMax?: number;
+  /**
    * @description 自定义action区域渲染
    */
   getActionRender?: (action: TimelineAction, row: TimelineRow) => ReactNode;
